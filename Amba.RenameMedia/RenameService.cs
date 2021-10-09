@@ -21,9 +21,8 @@ namespace Amba.RenameMedia
 
         
         private readonly Regex _androidMediaFormatRegex =
-            new Regex(@"([A-Z]{3})_(\d\d\d\d)(\d\d)(\d\d)_(\d\d)(\d\d)(\d\d).(mp4|jpg)",
+            new Regex(@"([A-Z]{3})_(\d\d\d\d)(\d\d)(\d\d)_(\d\d)(\d\d)(\d\d)(\d\d\d).(mp4|jpg)",
                 RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
         private readonly Regex _fixedFormatRegex = new Regex(@"^(\d\d\d\d)-(\d\d)-(\d\d) (\d\d)-(\d\d)-(\d\d)",
             RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
@@ -143,7 +142,7 @@ namespace Amba.RenameMedia
 
             if (date != null)
             {
-                DateTime.TryParseExact(date.GetValue().ToString(), FileNameDataFormat, CultureInfo.InvariantCulture,
+                DateTime.TryParseExact(date.GetValue().ToString(), "yyyy:MM:dd HH:mm:ss", CultureInfo.InvariantCulture,
                     DateTimeStyles.None, out var result);
                 return result;
             }
