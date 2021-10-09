@@ -1,0 +1,17 @@
+{
+  "profiles": {
+    "Amba.RenameMedia": {
+      "commandName": "Project"
+    },
+
+    "Amba.RenameMedia: help": {
+      "commandName": "Project",
+      "commandLineArgs": "--help"
+    },
+
+    "Amba.RenameMedia: rename-media": {
+      "commandName": "Project",
+      "commandLineArgs": " --path C:\\temp\\media"
+    }
+  }
+}
