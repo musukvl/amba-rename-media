@@ -17,11 +17,6 @@ namespace Amba.RenameMedia
             app.Conventions
                 .UseDefaultConventions()
                 .UseConstructorInjection(services);
-            if (!args.Any())
-            {
-                app.ShowHelp();
-                return 0;
-            }
             return app.Execute(args);
 
         }

@@ -10,6 +10,7 @@ using SixLabors.ImageSharp.Metadata.Profiles.Exif;
 namespace Amba.RenameMedia
 {
     [Command("rename-media", Description = "Gives date-time based name to images and videos")]
+    [HelpOption("--help|-h")]
     public class RenameMediaCommand 
     {
         [Option("-p|--path", CommandOptionType.SingleValue, Description = "Path to file or folder to process. Runs on current folder if empty.")]
