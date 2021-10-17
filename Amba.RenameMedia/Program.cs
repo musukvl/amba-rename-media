@@ -9,7 +9,7 @@ namespace Amba.RenameMedia
         static int Main(string[] args)
         {
             var services = new ServiceCollection()
- 
+                .AddSingleton<RenameService>()
                 .AddSingleton<IConsole>(PhysicalConsole.Singleton)
                 .BuildServiceProvider();
 

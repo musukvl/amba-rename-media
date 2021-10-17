@@ -2,6 +2,14 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Amba.RenameMedia", "Amba.RenameMedia\Amba.RenameMedia.csproj", "{6D4977C8-D54B-4A3C-8893-D945A0B58B2F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Amba.RenameMedia.Test", "Amba.RenameMedia.Test\Amba.RenameMedia.Test.csproj", "{CD6DF1D3-66A5-40D6-AEC0-625E4DC58D34}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build-tools", "build-tools", "{BF59444C-0151-4A76-AD5A-168BF021E3AB}"
+ProjectSection(SolutionItems) = preProject
+	build.ps1 = build.ps1
+	install-dotnet-tool.ps1 = install-dotnet-tool.ps1
+EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +20,9 @@ Global
 		{6D4977C8-D54B-4A3C-8893-D945A0B58B2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D4977C8-D54B-4A3C-8893-D945A0B58B2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D4977C8-D54B-4A3C-8893-D945A0B58B2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD6DF1D3-66A5-40D6-AEC0-625E4DC58D34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD6DF1D3-66A5-40D6-AEC0-625E4DC58D34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD6DF1D3-66A5-40D6-AEC0-625E4DC58D34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD6DF1D3-66A5-40D6-AEC0-625E4DC58D34}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
