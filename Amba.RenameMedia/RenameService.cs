@@ -55,34 +55,45 @@ namespace Amba.RenameMedia
         
         public string GetNewName(string fileName, string fileNameDataFormat)
         {
-            var newName = GetNewNameByKnownRegex(fileName, fileNameDataFormat);
+            // try generate new name different ways
             
-            var extension = Path.GetExtension(fileName).ToLowerInvariant();
+            var newName = GetNewNameByKnownRegex(fileName, fileNameDataFormat);
+            if (!string.IsNullOrEmpty(newName))
+                return newName;
             
             //try extract date from EXIF
-            if (string.IsNullOrWhiteSpace(newName) && (new[] {".jpg", ".jpeg"}).Contains(extension))
+            if (IsJpeg(fileName))
             {
                 newName = GetNewNameByExifDate(fileName, fileNameDataFormat);
+                if (!string.IsNullOrEmpty(newName))
+                    return newName;
             }
 
             //get datetime from file info
-            if (string.IsNullOrWhiteSpace(newName))
+            DateTime lastWriteTime = File.GetLastWriteTime(fileName);
+            if (lastWriteTime != DateTime.MinValue)
             {
-                DateTime lastWriteTime = File.GetLastWriteTime(fileName);
-                if (lastWriteTime != DateTime.MinValue)
-                {
-                    newName = lastWriteTime.ToString(fileNameDataFormat) + extension;
-                }
+                newName = lastWriteTime.ToString(fileNameDataFormat) + Path.GetExtension(fileName);
+                if (!string.IsNullOrEmpty(newName))
+                    return newName;
             }
-            return newName;
+            return string.Empty;
         }
 
+
+        private readonly HashSet<string> _jpegExtensions = new() { ".jpg", ".jpeg" }; 
+        private bool IsJpeg(string fileName)
+        {
+            var extension = Path.GetExtension(fileName).ToLowerInvariant();
+            return _jpegExtensions.Contains(extension);
+        }
+        
         private string GetNewNameByExifDate(string fileName, string fileNameDataFormat)
         {
             string newName = string.Empty;
             try
             {
-                using var image = SixLabors.ImageSharp.Image.Load(fileName);
+                using var image = Image.Load(fileName);
                 var creationDate = GetExifCreationDate(image);
                 if (creationDate != null)
                 {

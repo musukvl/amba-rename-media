@@ -27,7 +27,15 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="TestData" />
+      <None Update="TestData\1.jpg">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="TestData\PXL_20211017_161031207.jpg">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="TestData\1.mp4">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>
