@@ -10,6 +10,7 @@ namespace Amba.RenameMedia.Test
         [InlineData("20201118_235424.mp4", @"yyyy-MM-dd HH-mm-ss", true)]
         [InlineData("x.mp4", @"yyyy-MM-dd HH-mm-ss", true)]
         [InlineData("2020-11-18 23-54.mp4", @"yyyy-MM-dd HH-mm-ss", true)]
+        [InlineData("2020-11-18 23-54-44_123123123.mp4", @"yyyy-MM-dd HH-mm-ss", false)]
         public void ChangeRequiredTest(string fileName, string format, bool expectedChangeRequired)
         {
             var renameService = new RenameService();

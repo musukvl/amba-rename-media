@@ -117,6 +117,9 @@ namespace Amba.RenameMedia
         public bool ChangeRequired(string originFileName, string fileNameDataFormat)
         {
             var fileName = Path.GetFileNameWithoutExtension(originFileName);
+            fileName = fileName.Length > fileNameDataFormat.Length
+                ? fileName.Substring(0, fileNameDataFormat.Length)
+                : fileName;
             var dateParsed = DateTime.TryParseExact(fileName, fileNameDataFormat, CultureInfo.InvariantCulture,  DateTimeStyles.None, out DateTime result);
             return !dateParsed;
         }
