@@ -60,21 +60,9 @@ namespace Amba.RenameMedia
             var extension = Path.GetExtension(fileName).ToLowerInvariant();
             
             //try extract date from EXIF
-            if (string.IsNullOrWhiteSpace(newName) && extension == ".jpg")
+            if (string.IsNullOrWhiteSpace(newName) && (new[] {".jpg", ".jpeg"}).Contains(extension))
             {
-                try
-                {
-                    using var image = SixLabors.ImageSharp.Image.Load(fileName);
-                    var creationDate = GetExifCreationDate(image);
-                    if (creationDate != null)
-                    {
-                        newName = creationDate.Value.ToString(fileNameDataFormat) + extension;
-                    }
-                }
-                catch (Exception e)
-                {
-                    // do nothing if image reader cannot read the file
-                }
+                newName = GetNewNameByExifDate(fileName, fileNameDataFormat);
             }
 
             //get datetime from file info
@@ -85,6 +73,25 @@ namespace Amba.RenameMedia
                 {
                     newName = lastWriteTime.ToString(fileNameDataFormat) + extension;
                 }
+            }
+            return newName;
+        }
+
+        private string GetNewNameByExifDate(string fileName, string fileNameDataFormat)
+        {
+            string newName = string.Empty;
+            try
+            {
+                using var image = SixLabors.ImageSharp.Image.Load(fileName);
+                var creationDate = GetExifCreationDate(image);
+                if (creationDate != null)
+                {
+                    newName = creationDate.Value.ToString(fileNameDataFormat) + Path.GetExtension(fileName);
+                }
+            }
+            catch
+            {
+                // do nothing if image reader cannot read the file
             }
             return newName;
         }
