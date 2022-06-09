@@ -4,6 +4,8 @@ $appName = "Amba.RenameMedia"
 $toolName = "amba-rename-media"
 $csprojPath = "$appName/$appName.csproj"
 
+#build nuget package
+
 dotnet pack $csprojPath --configuration Release --output ./publish/tool `
     -p:PackAsTool=true `
     -p:ToolCommandName=$toolName `
