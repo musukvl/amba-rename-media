@@ -25,7 +25,10 @@ namespace Amba.RenameMedia
             new Regex(@"^(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})", RegexOptions.Compiled | RegexOptions.IgnoreCase),
             
             // advocam format
-            new Regex(@"^CarDV_(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})", RegexOptions.Compiled | RegexOptions.IgnoreCase)
+            new Regex(@"^CarDV_(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+            
+            // iphone ieic format
+            new Regex(@"(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})\d+_iOS.(mp4|jpg|heic|mov)", RegexOptions.Compiled | RegexOptions.IgnoreCase)
         };
 
         public string GetNewNameByKnownRegex(string fileName, string fileNameDataFormat)

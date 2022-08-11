@@ -18,6 +18,7 @@ namespace Amba.RenameMedia.Test
         }
         
         [Theory()]
+        [InlineData("20220210_163529968_iOS.heic", @"yyyy-MM-dd HH-mm-ss", true)]
         [InlineData("2020-11-18 23-54-24.mp4", @"yyyy-MM-dd HH-mm-ss", false)]
         [InlineData("20201118_235424.mp4", @"yyyy-MM-dd HH-mm-ss", true)]
         [InlineData("x.mp4", @"yyyy-MM-dd HH-mm-ss", true)]
@@ -37,6 +38,7 @@ namespace Amba.RenameMedia.Test
         [InlineData("x.mp4", @"")]
         [InlineData("PXL_20211017_161031207.jpg", @"2021-10-17 16-10-31.jpg")]
         [InlineData("CarDV_20211005_210716A.MP4", @"2021-10-05 21-07-16.mp4")]
+        [InlineData("20220210_163529968_iOS.heic", @"2022-02-10 16-35-29.heic")]
         public void GetNewNameByKnownRegexTest(string fileName, string expectedNewName)
         {
             var renameService = new RenameService();
