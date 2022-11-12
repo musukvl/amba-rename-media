@@ -73,6 +73,5 @@ namespace Amba.RenameMedia
             File.Move(filePath, newPath);
             Console.WriteLine($"{Path.GetFileName(filePath)}\t->\t{Path.GetFileName(newName)}");
         }
-
     }
 }

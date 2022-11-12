@@ -16,19 +16,24 @@ namespace Amba.RenameMedia
         private readonly List<Regex> knownFileFormats = new List<Regex>
         {
             // fixed format
-            new Regex(@"^(\d\d\d\d)-(\d\d)-(\d\d) (\d\d)-(\d\d)-(\d\d)",  RegexOptions.Compiled | RegexOptions.IgnoreCase),
+            new Regex(@"^(\d\d\d\d)-(\d\d)-(\d\d) (\d\d)-(\d\d)-(\d\d)", RegexOptions.Compiled | RegexOptions.IgnoreCase),
 
             // android format
             new Regex(@"^[A-Z]{3}_(\d\d\d\d)(\d\d)(\d\d)_(\d\d)(\d\d)(\d\d)(\d\d\d).(mp4|jpg)", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-            
+
             // samsung format
             new Regex(@"^(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-            
+
             // advocam format
             new Regex(@"^CarDV_(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})", RegexOptions.Compiled | RegexOptions.IgnoreCase),
-            
+
             // iphone ieic format
-            new Regex(@"(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})\d+_iOS.(mp4|jpg|heic|mov)", RegexOptions.Compiled | RegexOptions.IgnoreCase)
+            new Regex(@"(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})\d+_iOS.(mp4|jpg|heic|mov)", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+
+            //whatsapp video
+            new Regex(@"WhatsApp Video (\d{4})-(\d{2})-(\d{2}) at (\d{2})\.(\d{2})\.(\d{2}).*\.(mp4|jpeg|jpg)$", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+            //whatsapp image
+            new Regex(@"WhatsApp Image (\d{4})-(\d{2})-(\d{2}) at (\d{2})\.(\d{2})\.(\d{2}).*\.(jpeg|jpg)$", RegexOptions.Compiled | RegexOptions.IgnoreCase)
         };
 
         public string GetNewNameByKnownRegex(string fileName, string fileNameDataFormat)
@@ -48,22 +53,22 @@ namespace Amba.RenameMedia
                     var hour = Int32.Parse(fixedFormatMatch.Groups[4].Value);
                     var min = Int32.Parse(fixedFormatMatch.Groups[5].Value);
                     var sec = Int32.Parse(fixedFormatMatch.Groups[6].Value);
-                    
+
                     return (new DateTime(year, month, day, hour, min, sec, DateTimeKind.Utc)).ToString(fileNameDataFormat) + extension;
                 }
             }
 
             return string.Empty;
         }
-        
+
         public string GetNewName(string fileName, string fileNameDataFormat)
         {
             // try generate new name different ways
-            
+
             var newName = GetNewNameByKnownRegex(fileName, fileNameDataFormat);
             if (!string.IsNullOrEmpty(newName))
                 return newName;
-            
+
             //try extract date from EXIF
             if (IsJpeg(fileName))
             {
@@ -80,17 +85,18 @@ namespace Amba.RenameMedia
                 if (!string.IsNullOrEmpty(newName))
                     return newName;
             }
+
             return string.Empty;
         }
 
+        private readonly HashSet<string> _jpegExtensions = new() { ".jpg", ".jpeg" };
 
-        private readonly HashSet<string> _jpegExtensions = new() { ".jpg", ".jpeg" }; 
         private bool IsJpeg(string fileName)
         {
             var extension = Path.GetExtension(fileName).ToLowerInvariant();
             return _jpegExtensions.Contains(extension);
         }
-        
+
         private string GetNewNameByExifDate(string fileName, string fileNameDataFormat)
         {
             string newName = string.Empty;
@@ -107,6 +113,7 @@ namespace Amba.RenameMedia
             {
                 // do nothing if image reader cannot read the file
             }
+
             return newName;
         }
 
@@ -141,8 +148,8 @@ namespace Amba.RenameMedia
             fileName = fileName.Length > fileNameDataFormat.Length
                 ? fileName.Substring(0, fileNameDataFormat.Length)
                 : fileName;
-            var dateParsed = DateTime.TryParseExact(fileName, fileNameDataFormat, CultureInfo.InvariantCulture,  DateTimeStyles.None, out DateTime result);
+            var dateParsed = DateTime.TryParseExact(fileName, fileNameDataFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime result);
             return !dateParsed;
         }
     }
-} 
+}

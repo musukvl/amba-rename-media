@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using McMaster.Extensions.CommandLineUtils;
+﻿using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Amba.RenameMedia
@@ -18,7 +17,6 @@ namespace Amba.RenameMedia
                 .UseDefaultConventions()
                 .UseConstructorInjection(services);
             return app.Execute(args);
-
         }
     }
 }
