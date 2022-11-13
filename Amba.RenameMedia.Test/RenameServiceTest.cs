@@ -55,7 +55,6 @@ namespace Amba.RenameMedia.Test
         [InlineData("20201118_235424.mp4", @"2020-11-18 23-54-24.mp4")]
         [InlineData("PXL_20211017_161031207.jpg", @"2021-10-17 16-10-31.jpg")]
         [InlineData("CarDV_20211005_210716A.MP4", @"2021-10-05 21-07-16.mp4")]
-        [InlineData("1.mp4", @"2021-02-20 12-57-53.mp4")]
         public void GetNewName(string fileName, string expectedNewName)
         {
             var renameService = new RenameService();
