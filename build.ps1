@@ -1,5 +1,5 @@
 #build dotnet tool
-$version = "1.1.2"
+$version = "1.1.3"
 $appName = "Amba.RenameMedia"
 $toolName = "amba-rename-media"
 $csprojPath = "$appName/$appName.csproj"
@@ -18,7 +18,7 @@ dotnet publish $csprojPath `
     --self-contained true `
     -p:Version=$version  `
     -p:PublishSingleFile=true `
-    -p:PublishTrimmed=true `
+    -p:PublishTrimmed=false `
     -p:IncludeNativeLibrariesForSelfExtract=true `
     -p:DebugSymbols=false `
     -p:CopyOutputSymbolsToPublishDirectory=false
