@@ -19,7 +19,7 @@ namespace Amba.RenameMedia
             new Regex(@"^(\d\d\d\d)-(\d\d)-(\d\d) (\d\d)-(\d\d)-(\d\d)", RegexOptions.Compiled | RegexOptions.IgnoreCase),
 
             // android format
-            new Regex(@"^[A-Z]{3}_(\d\d\d\d)(\d\d)(\d\d)_(\d\d)(\d\d)(\d\d)(\d\d\d).(mp4|jpg)", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+            new Regex(@"^[A-Z]{3}_(\d\d\d\d)(\d\d)(\d\d)_(\d\d)(\d\d)(\d\d)(\d\d\d)", RegexOptions.Compiled | RegexOptions.IgnoreCase),
 
             // samsung format
             new Regex(@"^(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})", RegexOptions.Compiled | RegexOptions.IgnoreCase),
@@ -40,6 +40,9 @@ namespace Amba.RenameMedia
         {
             var extension = Path.GetExtension(fileName).ToLowerInvariant();
 
+            var subExtensionMatch = Regex.Match(Path.GetFileNameWithoutExtension(fileName), @"^.+(\.[a-zA-Z]+)$");
+            var subExtension = subExtensionMatch.Success ? subExtensionMatch.Groups[1].Value : "";
+            
             //try extract date from android file name
             foreach (var formatRegex in knownFileFormats)
             {
@@ -54,7 +57,8 @@ namespace Amba.RenameMedia
                     var min = Int32.Parse(fixedFormatMatch.Groups[5].Value);
                     var sec = Int32.Parse(fixedFormatMatch.Groups[6].Value);
 
-                    return (new DateTime(year, month, day, hour, min, sec, DateTimeKind.Utc)).ToString(fileNameDataFormat) + extension;
+                    var date = (new DateTime(year, month, day, hour, min, sec, DateTimeKind.Utc));
+                    return date.ToString(fileNameDataFormat) + subExtension  + extension;
                 }
             }
 

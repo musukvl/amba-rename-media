@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using McMaster.Extensions.CommandLineUtils;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Amba.RenameMedia
 {
@@ -21,6 +22,7 @@ namespace Amba.RenameMedia
             _renameService = renameService;
         }
         
+        [RequiresUnreferencedCode("OnExecute used by CLI Interface")]
         public int OnExecute()
         {
             var imagesFolderPath = WorkPath ??  Directory.GetCurrentDirectory();
