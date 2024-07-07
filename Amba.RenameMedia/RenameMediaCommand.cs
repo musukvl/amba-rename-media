@@ -7,6 +7,7 @@ namespace Amba.RenameMedia;
 
 [Command("rename-media", Description = "Gives date-time based name to images and videos")]
 [HelpOption("--help|-h")]
+[SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 public class RenameMediaCommand 
 {
     private readonly RenameService _renameService;

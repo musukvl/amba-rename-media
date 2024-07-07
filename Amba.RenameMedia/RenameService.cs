@@ -12,13 +12,13 @@ namespace Amba.RenameMedia;
 //[assembly: InternalsVisibleTo("Amba.RenameMedia.Tests")]
 public class RenameService
 {
-    private readonly List<Regex> _knownFileFormats = new List<Regex>
-    {
-        // fixed format
+    private readonly List<Regex> _knownFileFormats =
+    [
         new(@"^(\d\d\d\d)-(\d\d)-(\d\d) (\d\d)-(\d\d)-(\d\d)", RegexOptions.Compiled | RegexOptions.IgnoreCase),
 
         // android format
-        new(@"^[A-Z]{3}_(\d\d\d\d)(\d\d)(\d\d)_(\d\d)(\d\d)(\d\d)(\d\d\d)", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+        new(@"^[A-Z]{3}_(\d\d\d\d)(\d\d)(\d\d)_(\d\d)(\d\d)(\d\d)(\d\d\d)",
+            RegexOptions.Compiled | RegexOptions.IgnoreCase),
 
         // samsung format
         new(@"^(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})", RegexOptions.Compiled | RegexOptions.IgnoreCase),
@@ -27,13 +27,16 @@ public class RenameService
         new(@"^CarDV_(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})", RegexOptions.Compiled | RegexOptions.IgnoreCase),
 
         // iphone ieic format
-        new(@"(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})\d+_iOS.(mp4|jpg|heic|mov)", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+        new(@"(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})\d+_iOS.(mp4|jpg|heic|mov)",
+            RegexOptions.Compiled | RegexOptions.IgnoreCase),
 
         //whatsapp video
-        new(@"WhatsApp Video (\d{4})-(\d{2})-(\d{2}) at (\d{2})\.(\d{2})\.(\d{2}).*\.(mp4|jpeg|jpg)$", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+        new(@"WhatsApp Video (\d{4})-(\d{2})-(\d{2}) at (\d{2})\.(\d{2})\.(\d{2}).*\.(mp4|jpeg|jpg)$",
+            RegexOptions.Compiled | RegexOptions.IgnoreCase),
         //whatsapp image
-        new(@"WhatsApp Image (\d{4})-(\d{2})-(\d{2}) at (\d{2})\.(\d{2})\.(\d{2}).*\.(jpeg|jpg)$", RegexOptions.Compiled | RegexOptions.IgnoreCase)
-    };
+        new(@"WhatsApp Image (\d{4})-(\d{2})-(\d{2}) at (\d{2})\.(\d{2})\.(\d{2}).*\.(jpeg|jpg)$",
+            RegexOptions.Compiled | RegexOptions.IgnoreCase)
+    ];
 
     public string GetNewNameByKnownRegex(string fileName, string fileNameDataFormat)
     {
@@ -91,7 +94,7 @@ public class RenameService
         return string.Empty;
     }
 
-    private readonly HashSet<string> _jpegExtensions = new() { ".jpg", ".jpeg" };
+    private readonly HashSet<string> _jpegExtensions = [".jpg", ".jpeg"];
 
     private bool IsJpeg(string fileName)
     {
@@ -129,14 +132,11 @@ public class RenameService
             date = image.Metadata.ExifProfile.Values.FirstOrDefault(x => x.Tag == ExifTag.DateTimeDigitized);
         }
 
-        if (date == null)
-        {
-            date = image.Metadata.ExifProfile.Values.FirstOrDefault(x => x.Tag == ExifTag.DateTime);
-        }
+        date ??= image.Metadata.ExifProfile.Values.FirstOrDefault(x => x.Tag == ExifTag.DateTime);
 
         if (date != null)
         {
-            DateTime.TryParseExact(date.GetValue().ToString(), "yyyy:MM:dd HH:mm:ss", CultureInfo.InvariantCulture,
+            DateTime.TryParseExact(date.GetValue()?.ToString(), "yyyy:MM:dd HH:mm:ss", CultureInfo.InvariantCulture,
                 DateTimeStyles.None, out var result);
             return result;
         }
