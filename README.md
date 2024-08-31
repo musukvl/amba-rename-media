@@ -8,3 +8,12 @@ Command line tool to rename media files to timebased format.
 ## Build
 
 Use [build.ps1](build.ps1) to build .exe and dotnet tool
+
+# Deploy to Dockerhub:
+
+```bash
+docker build -t musukvl/amba-rename-media:1.0.2 .
+docker image tag musukvl/amba-rename-media:1.0.2 musukvl/amba-rename-media:latest
+docker push musukvl/amba-rename-media:latest
+docker push musukvl/amba-rename-media:1.0.2
+```
