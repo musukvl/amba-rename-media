@@ -1,46 +1,52 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
-using McMaster.Extensions.CommandLineUtils;
-using System.Diagnostics.CodeAnalysis;
+using System.Threading;
+using Spectre.Console;
+using Spectre.Console.Cli;
 
 namespace Amba.RenameMedia;
 
-[Command("rename-media", Description = "Gives date-time based name to images and videos")]
-[HelpOption("--help|-h")]
-[SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
-public class RenameMediaCommand(RenameService renameService)
+[Description("Gives date-time based name to images and videos")]
+public class RenameMediaCommand : Command<RenameMediaCommand.Settings>
 {
-    [Option("-p|--path", CommandOptionType.SingleValue, Description = "Path to file or folder to process. Runs on current folder if empty.")]
-    public string WorkPath { get; set; }
+    private readonly RenameService renameService = new();
 
-    [Option("-df|--date-format", CommandOptionType.SingleValue, Description = "Date time format. By default: yyyy-MM-dd HH-mm-ss")]
-    public string FileNameDataFormat { get; set; } = @"yyyy-MM-dd HH-mm-ss";
-
-
-    [RequiresUnreferencedCode("OnExecute used by CLI Interface")]
-    public int OnExecute()
+    public class Settings : CommandSettings
     {
-        var imagesFolderPath = WorkPath ??  Directory.GetCurrentDirectory();
-        ProcessFolder(imagesFolderPath);
+        [CommandOption("-p|--path <PATH>")]
+        [Description("Path to file or folder to process. Runs on current folder if empty.")]
+        public string WorkPath { get; init; }
+
+        [CommandOption("-d|--date-format|--df <FORMAT>")]
+        [Description("Date time format. By default: yyyy-MM-dd HH-mm-ss")]
+        [DefaultValue("yyyy-MM-dd HH-mm-ss")]
+        public string FileNameDataFormat { get; init; } = @"yyyy-MM-dd HH-mm-ss";
+    }
+
+    protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
+    {
+        var imagesFolderPath = settings.WorkPath ?? Directory.GetCurrentDirectory();
+        ProcessFolder(imagesFolderPath, settings.FileNameDataFormat);
         return 0;
     }
 
-    private void ProcessFolder(string imagesFolderPath)
+    private void ProcessFolder(string imagesFolderPath, string fileNameDataFormat)
     {
         foreach (var file in Directory.GetFiles(imagesFolderPath))
         {
             try
             {
-                ProcessFile(file);
+                ProcessFile(file, fileNameDataFormat);
             }
             catch (Exception e)
             {
-                Console.WriteLine($"{file} {e.Message}");
+                AnsiConsole.WriteLine($"{file} {e.Message}");
             }
         }
     }
-    
+
     private bool IsMedia(string fileName)
     {
         var extension = Path.GetExtension(fileName).ToLowerInvariant();
@@ -55,17 +61,16 @@ public class RenameMediaCommand(RenameService renameService)
         return imageExtensions.Contains(extension);
     }
 
-
-    private void ProcessFile(string filePath)
+    private void ProcessFile(string filePath, string fileNameDataFormat)
     {
         if (!IsMedia(filePath))
             return;
         var originFileName = Path.GetFileName(filePath);
-        var changeRequired = renameService.ChangeRequired(originFileName, FileNameDataFormat);
+        var changeRequired = renameService.ChangeRequired(originFileName, fileNameDataFormat);
         if (!changeRequired)
             return;
-        var newName = renameService.GetNewName(originFileName, FileNameDataFormat);
-            
+        var newName = renameService.GetNewName(originFileName, fileNameDataFormat);
+
         if (string.IsNullOrWhiteSpace(newName))
         {
             // can't find new name
@@ -77,7 +82,7 @@ public class RenameMediaCommand(RenameService renameService)
             // no change needed
             return;
         }
-            
+
         var folder = Path.GetDirectoryName(filePath);
         var newPath = Path.Combine(folder, newName);
         if (File.Exists(newPath))
@@ -86,6 +91,6 @@ public class RenameMediaCommand(RenameService renameService)
                 Path.GetFileNameWithoutExtension(newName) + "_" + Path.GetFileName(filePath));
         }
         File.Move(filePath, newPath);
-        Console.WriteLine($"{Path.GetFileName(filePath)}\t->\t{Path.GetFileName(newName)}");
+        AnsiConsole.WriteLine($"{Path.GetFileName(filePath)}\t->\t{Path.GetFileName(newName)}");
     }
 }

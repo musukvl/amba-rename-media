@@ -12,8 +12,8 @@ Use [build.ps1](build.ps1) to build .exe and dotnet tool
 # Deploy to Dockerhub:
 
 ```bash
-docker build -t musukvl/amba-rename-media:1.0.2 .
-docker image tag musukvl/amba-rename-media:1.0.2 musukvl/amba-rename-media:latest
+docker build -t musukvl/amba-rename-media:2.0.0 .
+docker image tag musukvl/amba-rename-media:2.0.0 musukvl/amba-rename-media:latest
 docker push musukvl/amba-rename-media:latest
-docker push musukvl/amba-rename-media:1.0.2
+docker push musukvl/amba-rename-media:2.0.0
 ```

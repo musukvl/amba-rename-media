@@ -11,7 +11,7 @@
 
     "Amba.RenameMedia: rename-media": {
       "commandName": "Project",
-      "commandLineArgs": " --path C:\\temp\\media"
+      "commandLineArgs": " --path \"\\\\musukbox\\cloud_hot\\OneDrive\\Галерея камеры SkyDrive\""
     }
   }
 }

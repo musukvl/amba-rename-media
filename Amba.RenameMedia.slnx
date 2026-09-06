@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/build-tools/">
+    <File Path="build.ps1" />
+    <File Path="install-dotnet-tool.ps1" />
+  </Folder>
+  <Project Path="Amba.RenameMedia.Test/Amba.RenameMedia.Test.csproj" />
+  <Project Path="Amba.RenameMedia/Amba.RenameMedia.csproj" />
+</Solution>

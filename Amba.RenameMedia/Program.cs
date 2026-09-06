@@ -1,15 +1,9 @@
 ﻿using Amba.RenameMedia;
-using McMaster.Extensions.CommandLineUtils;
-using Microsoft.Extensions.DependencyInjection;
+using Spectre.Console.Cli;
 
-var services = new ServiceCollection()
-    .AddSingleton<RenameService>()
-    .AddSingleton<IConsole>(PhysicalConsole.Singleton)
-    .BuildServiceProvider();
-
-var app = new CommandLineApplication<RenameMediaCommand>();
-app.Conventions
-    .UseDefaultConventions()
-    .UseConstructorInjection(services);
-return app.Execute(args);
- 
+var app = new CommandApp<RenameMediaCommand>();
+app.Configure(config =>
+{
+    config.SetApplicationName("rename-media");
+});
+return app.Run(args);

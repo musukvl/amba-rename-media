@@ -2,10 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Text.RegularExpressions;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Metadata.Profiles.Exif;
+using MetadataExtractor;
+using MetadataExtractor.Formats.Exif;
 
 namespace Amba.RenameMedia;
 
@@ -104,41 +103,39 @@ public class RenameService
 
     private string GetNewNameByExifDate(string fileName, string fileNameDataFormat)
     {
-        string newName = string.Empty;
         try
         {
-            using var image = Image.Load(fileName);
-            var creationDate = GetExifCreationDate(image);
+            var creationDate = GetExifCreationDate(fileName);
             if (creationDate != null)
             {
-                newName = creationDate.Value.ToString(fileNameDataFormat) + Path.GetExtension(fileName);
+                return creationDate.Value.ToString(fileNameDataFormat) + Path.GetExtension(fileName);
             }
         }
         catch
         {
-            // do nothing if image reader cannot read the file
+            // do nothing if metadata reader cannot read the file
         }
 
-        return newName;
+        return string.Empty;
     }
 
-    private DateTime? GetExifCreationDate(Image image)
+    private static DateTime? GetExifCreationDate(string fileName)
     {
-        if (image.Metadata?.ExifProfile?.Values == null)
-            return null;
-        var date = image.Metadata.ExifProfile.Values.FirstOrDefault(x => x.Tag == ExifTag.DateTimeOriginal);
-        if (date != null)
+        var directories = ImageMetadataReader.ReadMetadata(fileName);
+        var tags = new[]
         {
-            date = image.Metadata.ExifProfile.Values.FirstOrDefault(x => x.Tag == ExifTag.DateTimeDigitized);
-        }
+            ExifDirectoryBase.TagDateTimeOriginal,
+            ExifDirectoryBase.TagDateTimeDigitized,
+            ExifDirectoryBase.TagDateTime
+        };
 
-        date ??= image.Metadata.ExifProfile.Values.FirstOrDefault(x => x.Tag == ExifTag.DateTime);
-
-        if (date != null)
+        foreach (var tag in tags)
         {
-            DateTime.TryParseExact(date.GetValue()?.ToString(), "yyyy:MM:dd HH:mm:ss", CultureInfo.InvariantCulture,
-                DateTimeStyles.None, out var result);
-            return result;
+            foreach (var directory in directories)
+            {
+                if (directory.TryGetDateTime(tag, out var date))
+                    return date;
+            }
         }
 
         return null;
