@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Xunit;
 
@@ -59,5 +60,50 @@ public class RenameServiceTest
         var renameService = new RenameService();
         var actualNewName = renameService.GetNewName(fileName, FileDateFomat);
         Assert.Equal(expectedNewName, actualNewName);
+    }
+
+    [Fact]
+    public void GetNewName_ReadsExifFromFullPath_WhenCurrentDirectoryIsDifferent()
+    {
+        var fixture = Path.Combine(AppContext.BaseDirectory, "TestData", "1.jpg");
+        Assert.True(File.Exists(fixture));
+
+        var originalDirectory = Directory.GetCurrentDirectory();
+        var tempDirectory = Directory.CreateTempSubdirectory();
+        try
+        {
+            Directory.SetCurrentDirectory(tempDirectory.FullName);
+            var renameService = new RenameService();
+            var actualNewName = renameService.GetNewName(fixture, FileDateFomat);
+            Assert.Equal("2021-10-17 19-10-31.jpg", actualNewName);
+        }
+        finally
+        {
+            Directory.SetCurrentDirectory(originalDirectory);
+            tempDirectory.Delete(true);
+        }
+    }
+
+    [Fact]
+    public void GetNewNameByKnownRegex_UsesFileNameFromFullPath()
+    {
+        var renameService = new RenameService();
+        var path = Path.Combine("photos", "inbox", "20201118_235424.mp4");
+        var actualNewName = renameService.GetNewNameByKnownRegex(path, FileDateFomat);
+        Assert.Equal("2020-11-18 23-54-24.mp4", actualNewName);
+    }
+
+    [Theory]
+    [InlineData("photo.heic", true)]
+    [InlineData("photo.HEIC", true)]
+    [InlineData("photo.heif", true)]
+    [InlineData("IMG_0001.heic", true)]
+    [InlineData("photo.jpg", true)]
+    [InlineData("clip.mp4", true)]
+    [InlineData("notes.txt", false)]
+    [InlineData(@"C:\media\20220210_163529968_iOS.heic", true)]
+    public void IsMedia(string fileName, bool expected)
+    {
+        Assert.Equal(expected, RenameService.IsMedia(fileName));
     }
 }

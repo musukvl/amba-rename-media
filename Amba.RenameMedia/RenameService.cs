@@ -37,8 +37,22 @@ public class RenameService
             RegexOptions.Compiled | RegexOptions.IgnoreCase)
     ];
 
+    private static readonly HashSet<string> MediaExtensions =
+    [
+        ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp", ".svg", ".heic", ".heif",
+        ".cr2", ".nef", ".dng", ".arw", ".orf", ".rw2", ".raf", ".pef", ".srw", ".x3f", ".mrw", ".nrw", ".kdc",
+        ".mp4", ".mov", ".avi", ".mkv", ".wmv", ".flv", ".webm", ".vob", ".ogv", ".ogg", ".gifv", ".m4v", ".3gp", ".3g2"
+    ];
+
+    public static bool IsMedia(string filePath)
+    {
+        var extension = Path.GetExtension(filePath).ToLowerInvariant();
+        return MediaExtensions.Contains(extension);
+    }
+
     public string GetNewNameByKnownRegex(string fileName, string fileNameDataFormat)
     {
+        fileName = Path.GetFileName(fileName);
         var extension = Path.GetExtension(fileName).ToLowerInvariant();
 
         var subExtensionMatch = Regex.Match(Path.GetFileNameWithoutExtension(fileName), @"^.+(\.[a-zA-Z]+)$");
@@ -66,8 +80,10 @@ public class RenameService
         return string.Empty;
     }
 
-    public string GetNewName(string fileName, string fileNameDataFormat)
+    public string GetNewName(string filePath, string fileNameDataFormat)
     {
+        var fileName = Path.GetFileName(filePath);
+
         // try generate new name in different ways
         var newName = GetNewNameByKnownRegex(fileName, fileNameDataFormat);
         if (!string.IsNullOrEmpty(newName))
@@ -76,13 +92,13 @@ public class RenameService
         //try extract date from EXIF
         if (IsJpeg(fileName))
         {
-            newName = GetNewNameByExifDate(fileName, fileNameDataFormat);
+            newName = GetNewNameByExifDate(filePath, fileNameDataFormat);
             if (!string.IsNullOrEmpty(newName))
                 return newName;
         }
 
         //get datetime from file info
-        var lastWriteTime = File.GetLastWriteTime(fileName);
+        var lastWriteTime = File.GetLastWriteTime(filePath);
         if (lastWriteTime != DateTime.MinValue)
         {
             newName = lastWriteTime.ToString(fileNameDataFormat) + Path.GetExtension(fileName);

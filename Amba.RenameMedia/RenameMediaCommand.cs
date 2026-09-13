@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Threading;
@@ -23,53 +22,82 @@ public class RenameMediaCommand : Command<RenameMediaCommand.Settings>
         [Description("Date time format. By default: yyyy-MM-dd HH-mm-ss")]
         [DefaultValue("yyyy-MM-dd HH-mm-ss")]
         public string FileNameDataFormat { get; init; } = @"yyyy-MM-dd HH-mm-ss";
+
+        public override ValidationResult Validate()
+        {
+            var result = base.Validate();
+            if (!result.Successful)
+                return result;
+
+            var path = ResolveWorkPath(WorkPath);
+            if (File.Exists(path) || Directory.Exists(path))
+                return ValidationResult.Success();
+
+            return ValidationResult.Error($"Path not found: {path}");
+        }
+    }
+
+    public static string ResolveWorkPath(string workPath)
+    {
+        return Path.GetFullPath(string.IsNullOrWhiteSpace(workPath)
+            ? Directory.GetCurrentDirectory()
+            : workPath);
+    }
+
+    public static bool TryGetFilesToProcess(string workPath, out string[] files, out string error)
+    {
+        var path = ResolveWorkPath(workPath);
+        if (File.Exists(path))
+        {
+            files = [path];
+            error = null;
+            return true;
+        }
+
+        if (Directory.Exists(path))
+        {
+            files = Directory.GetFiles(path);
+            error = null;
+            return true;
+        }
+
+        files = [];
+        error = $"Path not found: {path}";
+        return false;
     }
 
     protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
-        var imagesFolderPath = settings.WorkPath ?? Directory.GetCurrentDirectory();
-        ProcessFolder(imagesFolderPath, settings.FileNameDataFormat);
-        return 0;
-    }
+        if (!TryGetFilesToProcess(settings.WorkPath, out var files, out var error))
+        {
+            AnsiConsole.WriteLine(error);
+            return 1;
+        }
 
-    private void ProcessFolder(string imagesFolderPath, string fileNameDataFormat)
-    {
-        foreach (var file in Directory.GetFiles(imagesFolderPath))
+        foreach (var file in files)
         {
             try
             {
-                ProcessFile(file, fileNameDataFormat);
+                ProcessFile(file, settings.FileNameDataFormat);
             }
             catch (Exception e)
             {
                 AnsiConsole.WriteLine($"{file} {e.Message}");
             }
         }
-    }
 
-    private bool IsMedia(string fileName)
-    {
-        var extension = Path.GetExtension(fileName).ToLowerInvariant();
-        var imageExtensions = new HashSet<string>
-        {
-            ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp", ".svg"
-            // raw formats
-            , ".cr2", ".nef", ".dng", ".arw", ".orf", ".rw2", ".raf", ".pef", ".srw", ".x3f", ".mrw", ".nrw", ".kdc"
-            // video formats
-            , ".mp4", ".mov", ".avi", ".mkv", ".wmv", ".flv", ".webm", ".vob", ".ogv", ".ogg", ".gifv", ".m4v", ".3gp", ".3g2"
-        };
-        return imageExtensions.Contains(extension);
+        return 0;
     }
 
     private void ProcessFile(string filePath, string fileNameDataFormat)
     {
-        if (!IsMedia(filePath))
+        if (!RenameService.IsMedia(filePath))
             return;
         var originFileName = Path.GetFileName(filePath);
         var changeRequired = renameService.ChangeRequired(originFileName, fileNameDataFormat);
         if (!changeRequired)
             return;
-        var newName = renameService.GetNewName(originFileName, fileNameDataFormat);
+        var newName = renameService.GetNewName(filePath, fileNameDataFormat);
 
         if (string.IsNullOrWhiteSpace(newName))
         {
