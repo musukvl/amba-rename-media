@@ -86,6 +86,12 @@ public class RenameMediaCommandTest
     }
 
     [Fact]
+    public void AppVersion_MatchesProjectVersion()
+    {
+        Assert.Matches(@"^2\.0\.0(\+.+)?$", AppVersion.Current);
+    }
+
+    [Fact]
     public void SettingsValidate_Fails_WhenPathDoesNotExist()
     {
         var missing = Path.Combine(Path.GetTempPath(), "amba-rename-media-missing-" + Guid.NewGuid());

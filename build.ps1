@@ -1,5 +1,5 @@
 #build dotnet tool
-$version = "2.0.0"
+# Version comes from <Version> in Amba.RenameMedia.csproj.
 $appName = "Amba.RenameMedia"
 $toolName = "amba-rename-media"
 $csprojPath = "$appName/$appName.csproj"
@@ -7,8 +7,7 @@ $csprojPath = "$appName/$appName.csproj"
 #build nuget package
 dotnet pack $csprojPath --configuration Release --output ./publish/tool `
     -p:PackAsTool=true `
-    -p:ToolCommandName=$toolName `
-    -p:Version=$version
+    -p:ToolCommandName=$toolName
 
 #build single file
 dotnet publish $csprojPath `
@@ -16,7 +15,6 @@ dotnet publish $csprojPath `
     -r win-x64 `
     --output ./publish/exe  `
     --self-contained true `
-    -p:Version=$version  `
     -p:PublishSingleFile=true `
     -p:PublishTrimmed=false `
     -p:IncludeNativeLibrariesForSelfExtract=true `
