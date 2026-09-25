@@ -84,18 +84,19 @@ public class RenameService
     {
         var fileName = Path.GetFileName(filePath);
 
-        // try generate new name in different ways
+        // EXIF DateTimeOriginal is the camera's local time. OffsetTimeOriginal
+        // only records how that local time differs from UTC, so it is not added.
+        // Filename patterns such as PXL_yyyyMMdd_HHmmss are UTC and must not win.
+        if (IsJpeg(fileName))
+        {
+            var exifName = GetNewNameByExifDate(filePath, fileNameDataFormat);
+            if (!string.IsNullOrEmpty(exifName))
+                return exifName;
+        }
+
         var newName = GetNewNameByKnownRegex(fileName, fileNameDataFormat);
         if (!string.IsNullOrEmpty(newName))
             return newName;
-
-        //try extract date from EXIF
-        if (IsJpeg(fileName))
-        {
-            newName = GetNewNameByExifDate(filePath, fileNameDataFormat);
-            if (!string.IsNullOrEmpty(newName))
-                return newName;
-        }
 
         //get datetime from file info
         var lastWriteTime = File.GetLastWriteTime(filePath);

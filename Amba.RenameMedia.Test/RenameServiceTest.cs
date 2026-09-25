@@ -53,8 +53,9 @@ public class RenameServiceTest
     [Theory()]
     [InlineData("1.jpg", @"2021-10-17 19-10-31.jpg")]
     [InlineData("20201118_235424.mp4", @"2020-11-18 23-54-24.mp4")]
-    [InlineData("PXL_20211017_161031207.jpg", @"2021-10-17 16-10-31.jpg")]
+    [InlineData("PXL_20211017_161031207.jpg", @"2021-10-17 19-10-31.jpg")]
     [InlineData("CarDV_20211005_210716A.MP4", @"2021-10-05 21-07-16.mp4")]
+    [InlineData("DSC00010.jpg", @"2026-09-22 11-15-32.jpg")]
     public void GetNewName(string fileName, string expectedNewName)
     {
         var renameService = new RenameService();
